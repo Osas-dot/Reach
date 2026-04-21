@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reach - USDC Payments</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0f;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    .header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1a1a2e;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00d4ff, #0066ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge {
+      background: #0066ff20;
+      color: #00d4ff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      border: 1px solid #0066ff40;
+    }
+
+    .hero {
+      padding: 40px 20px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #00d4ff, #0066ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, #0066ff, #00d4ff);
+      border-radius: 20px;
+      padding: 24px;
+      margin: 0 20px 24px;
+      text-align: center;
+    }
+
+    .balance-label {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .balance-amount {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .balance-sub {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .wallet-address {
+      background: #ffffff15;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-top: 12px;
+      font-size: 11px;
+      word-break: break-all;
+      opacity: 0.8;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 20px 24px;
+    }
+
+    .action-btn {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4e;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+      background: #0066ff20;
+    }
+
+    .action-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .action-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .action-sub {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .section-title {
+      padding: 0 20px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .savings-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4e;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 0 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .savings-info h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .savings-info p {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .savings-amount {
+      text-align: right;
+    }
+
+    .savings-amount .amount {
+      font-size: 18px;
+      font-weight: 800;
+      color: #00d4ff;
+    }
+
+    .savings-amount .growth {
+      font-size: 11px;
+      color: #00ff88;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #12121f;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px;
+      border-top: 1px solid #2a2a4e;
+      z-index: 100;
+    }
+
+    .modal.active { display: block; }
+
+    .modal h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: #1a1a2e;
+      border: 1px solid #2a2a4e;
+      border-radius: 12px;
+      padding: 14px;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: #0066ff;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #0066ff, #00d4ff);
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .cancel-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #2a2a4e;
+      border-radius: 14px;
+      padding: 14px;
+      color: #888;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #00000080;
+      z-index: 99;
+    }
+
+    .overlay.active { display: block; }
+
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00d4ff;
+      color: #000;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 200;
+    }
+
+    .toast.active { display: block; }
+
+    .built-tag {
+      text-align: center;
+      padding: 10px;
+      font-size: 11px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Reach</div>
+  <div class="badge">Arc Network</div>
+</div>
+
+<div class="hero">
+  <h1>Your <span>Dollar Wallet</span><br>Built for Nigeria</h1>
+  <p>Send, save and receive USDC instantly</p>
+</div>
+
+<div class="balance-card">
+  <div class="balance-label">Total Balance</div>
+  <div class="balance-amount">$20.00</div>
+  <div class="balance-sub">USDC on Arc Network</div>
+  <div class="wallet-address" id="walletAddr">Connect your wallet to begin</div>
+</div>
+
+<div class="actions">
+  <div class="action-btn" onclick="openModal('send')">
+    <div class="action-icon">↗️</div>
+    <div class="action-label">Send</div>
+    <div class="action-sub">Transfer USDC</div>
+  </div>
+  <div class="action-btn" onclick="openModal('receive')">
+    <div class="action-icon">↙️</div>
+    <div class="action-label">Receive</div>
+    <div class="action-sub">Get paid in USDC</div>
+  </div>
+  <div class="action-btn" onclick="openModal('save')">
+    <div class="action-icon">🏦</div>
+    <div class="action-label">Save</div>
+    <div class="action-sub">Dollar savings</div>
+  </div>
+  <div class="action-btn" onclick="openModal('pay')">
+    <div class="action-icon">⚡</div>
+    <div class="action-label">Pay</div>
+    <div class="action-sub">Pay with USDC</div>
+  </div>
+</div>
+
+<div class="section-title">💰 Savings</div>
+<div class="savings-card">
+  <div class="savings-info">
+    <h3>Dollar Vault</h3>
+    <p>Earning yield in USDC</p>
+  </div>
+  <div class="savings-amount">
+    <div class="amount">$0.00</div>
+    <div class="growth">+ Start saving</div>
+  </div>
+</div>
+
+<div class="built-tag">Built in Nigeria 🇳🇬 · Powered by Circle USDC</div>
+
+<!-- Send Modal -->
+<div class="overlay" id="overlay" onclick="closeModal()"></div>
+
+<div class="modal" id="modal">
+  <h2 id="modalTitle">Send USDC</h2>
+  <div id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const wallet = "0x2276e9f2Ab9024664D2577cB586ea338Fecc9159";
+  document.getElementById('walletAddr').textContent = wallet.slice(0,6) + '...' + wallet.slice(-4);
+
+  function openModal(type) {
+    const modal = document.getElementById('modal');
+    const overlay = document.getElementById('overlay');
+    const title = document.getElementById('modalTitle');
+    const content = document.getElementById('modalContent');
+
+    if (type === 'send') {
+      title.textContent = '↗️ Send USDC';
+      content.innerHTML = `
+        <div class="input-group">
+          <label>Recipient Address</label>
+          <input type="text" placeholder="0x..." id="sendAddr">
+        </div>
+        <div class="input-group">
+          <label>Amount (USDC)</label>
+          <input type="number" placeholder="0.00" id="sendAmt">
+        </div>
+        <button class="submit-btn" onclick="showToast('Transaction submitted!')">Send USDC</button>
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      `;
+    } else if (type === 'receive') {
+      title.textContent = '↙️ Receive USDC';
+      content.innerHTML = `
+        <div class="input-group">
+          <label>Your Reach Address</label>
+          <input type="text" value="${wallet}" readonly>
+        </div>
+        <button class="submit-btn" onclick="copyAddress()">Copy Address</button>
+        <button class="cancel-btn" onclick="closeModal()">Close</button>
+      `;
+    } else if (type === 'save') {
+      title.textContent = '🏦 Dollar Savings';
+      content.innerHTML = `
+        <div class="input-group">
+          <label>Amount to Save (USDC)</label>
+          <input type="number" placeholder="0.00">
+        </div>
+        <button class="submit-btn" onclick="showToast('Saved to Dollar Vault!')">Save Now</button>
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      `;
+    } else if (type === 'pay') {
+      title.textContent = '⚡ Pay with USDC';
+      content.innerHTML = `
+        <div class="input-group">
+          <label>Pay To</label>
+          <input type="text" placeholder="Address or username">
+        </div>
+        <div class="input-group">
+          <label>Amount (USDC)</label>
+          <input type="number" placeholder="0.00">
+        </div>
+        <button class="submit-btn" onclick="showToast('Payment sent!')">Pay Now</button>
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      `;
+    }
+
+    modal.classList.add('active');
+    overlay.classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+  }
+
+  function copyAddress() {
+    navigator.clipboard.writeText(wallet);
+    showToast('Address copied!');
+    closeModal();
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('active');
+    setTimeout(() => toast.classList.remove('active'), 3000);
+    closeModal();
+  }
+</script>
+</body>
+</html>
