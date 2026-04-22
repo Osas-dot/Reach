@@ -3,185 +3,332 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reach - USDC Payments</title>
+  <title>Reach - Dollar Wallet on Base</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #0a0a0f;
+      background: #0052ff08;
       color: #ffffff;
       font-family: 'Segoe UI', sans-serif;
       min-height: 100vh;
+      background: #060610;
     }
 
     .header {
-      padding: 20px;
+      padding: 18px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #1a1a2e;
+      border-bottom: 1px solid #ffffff10;
     }
 
     .logo {
-      font-size: 24px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #00d4ff, #0066ff);
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #0052ff, #00d4ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .badge {
-      background: #0066ff20;
-      color: #00d4ff;
-      padding: 4px 12px;
+    .base-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0052ff20;
+      border: 1px solid #0052ff50;
+      padding: 5px 12px;
       border-radius: 20px;
       font-size: 12px;
-      border: 1px solid #0066ff40;
+      color: #0052ff;
+      font-weight: 600;
     }
 
-    .hero {
-      padding: 40px 20px 20px;
+    .base-dot {
+      width: 8px;
+      height: 8px;
+      background: #0052ff;
+      border-radius: 50%;
+    }
+
+    /* Connect Screen */
+    .connect-screen {
+      padding: 60px 20px;
       text-align: center;
     }
 
-    .hero h1 {
-      font-size: 32px;
-      font-weight: 800;
+    .connect-screen h1 {
+      font-size: 30px;
+      font-weight: 900;
       line-height: 1.2;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
-    .hero h1 span {
-      background: linear-gradient(135deg, #00d4ff, #0066ff);
+    .connect-screen h1 span {
+      background: linear-gradient(135deg, #0052ff, #00d4ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .hero p {
+    .connect-screen p {
       color: #888;
       font-size: 14px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .feature-list {
+      text-align: left;
+      background: #ffffff08;
+      border: 1px solid #ffffff10;
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 30px;
     }
 
-    .balance-card {
-      background: linear-gradient(135deg, #0066ff, #00d4ff);
-      border-radius: 20px;
-      padding: 24px;
-      margin: 0 20px 24px;
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .feature-icon {
+      font-size: 20px;
+      width: 32px;
       text-align: center;
     }
 
-    .balance-label {
-      font-size: 12px;
-      opacity: 0.8;
-      margin-bottom: 8px;
+    .connect-btn {
+      width: 100%;
+      background: #0052ff;
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .connect-btn:active { opacity: 0.9; }
+
+    .connect-btn.secondary {
+      background: transparent;
+      border: 1px solid #ffffff20;
+      color: #888;
+      font-size: 14px;
+      padding: 14px;
+    }
+
+    /* Main App */
+    .app-screen { display: none; }
+
+    .balance-card {
+      margin: 20px;
+      background: linear-gradient(135deg, #0052ff, #0041cc);
+      border-radius: 24px;
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 150px;
+      height: 150px;
+      background: #ffffff10;
+      border-radius: 50%;
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      right: 20px;
+      width: 200px;
+      height: 200px;
+      background: #ffffff08;
+      border-radius: 50%;
+    }
+
+    .balance-network {
+      font-size: 11px;
+      opacity: 0.7;
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-bottom: 8px;
     }
 
     .balance-amount {
-      font-size: 42px;
-      font-weight: 800;
+      font-size: 44px;
+      font-weight: 900;
       margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
     }
 
-    .balance-sub {
-      font-size: 12px;
+    .balance-usdc {
+      font-size: 13px;
       opacity: 0.7;
+      margin-bottom: 16px;
     }
 
-    .wallet-address {
+    .identity-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       background: #ffffff15;
       border-radius: 10px;
       padding: 8px 12px;
-      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .identity-avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #00d4ff, #0052ff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .identity-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .identity-address {
       font-size: 11px;
-      word-break: break-all;
-      opacity: 0.8;
+      opacity: 0.6;
+      margin-left: auto;
     }
 
     .actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 0 20px 24px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 0 20px 20px;
     }
 
     .action-btn {
-      background: #1a1a2e;
-      border: 1px solid #2a2a4e;
+      background: #ffffff08;
+      border: 1px solid #ffffff10;
       border-radius: 16px;
-      padding: 20px;
+      padding: 14px 8px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
     .action-btn:active {
-      transform: scale(0.97);
-      background: #0066ff20;
+      background: #0052ff20;
+      border-color: #0052ff40;
     }
 
-    .action-icon {
-      font-size: 28px;
-      margin-bottom: 8px;
+    .action-icon { font-size: 22px; margin-bottom: 6px; }
+    .action-label { font-size: 11px; color: #aaa; font-weight: 600; }
+
+    .section {
+      padding: 0 20px 20px;
     }
 
-    .action-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .action-sub {
-      font-size: 11px;
-      color: #666;
-      margin-top: 2px;
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
     }
 
     .section-title {
-      padding: 0 20px 12px;
       font-size: 16px;
       font-weight: 700;
+    }
+
+    .section-link {
+      font-size: 12px;
+      color: #0052ff;
+    }
+
+    .identity-card {
+      background: #ffffff08;
+      border: 1px solid #ffffff10;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .basename-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .basename-input {
+      flex: 1;
+      background: #ffffff10;
+      border: 1px solid #ffffff20;
+      border-radius: 10px;
+      padding: 12px;
       color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .basename-input:focus {
+      border-color: #0052ff;
+    }
+
+    .claim-btn {
+      background: #0052ff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     .savings-card {
-      background: #1a1a2e;
-      border: 1px solid #2a2a4e;
+      background: linear-gradient(135deg, #00201a, #003326);
+      border: 1px solid #00ff8820;
       border-radius: 16px;
       padding: 20px;
-      margin: 0 20px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .savings-info h3 {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+    .savings-left h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .savings-left p { font-size: 12px; color: #666; }
+    .savings-right .amount { font-size: 20px; font-weight: 800; color: #00ff88; }
+    .savings-right .apy { font-size: 11px; color: #00ff8880; }
 
-    .savings-info p {
-      font-size: 12px;
-      color: #666;
+    /* Modal */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #00000090;
+      z-index: 99;
     }
-
-    .savings-amount {
-      text-align: right;
-    }
-
-    .savings-amount .amount {
-      font-size: 18px;
-      font-weight: 800;
-      color: #00d4ff;
-    }
-
-    .savings-amount .growth {
-      font-size: 11px;
-      color: #00ff88;
-    }
+    .overlay.active { display: block; }
 
     .modal {
       display: none;
@@ -189,25 +336,29 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: #12121f;
+      background: #0e0e1a;
       border-radius: 24px 24px 0 0;
-      padding: 24px 20px;
-      border-top: 1px solid #2a2a4e;
+      padding: 24px 20px 40px;
+      border-top: 1px solid #ffffff15;
       z-index: 100;
     }
-
     .modal.active { display: block; }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: #ffffff20;
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
 
     .modal h2 {
       font-size: 18px;
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 20px;
-      text-align: center;
     }
 
-    .input-group {
-      margin-bottom: 16px;
-    }
+    .input-group { margin-bottom: 16px; }
 
     .input-group label {
       font-size: 12px;
@@ -218,22 +369,20 @@
 
     .input-group input {
       width: 100%;
-      background: #1a1a2e;
-      border: 1px solid #2a2a4e;
+      background: #ffffff08;
+      border: 1px solid #ffffff15;
       border-radius: 12px;
       padding: 14px;
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       outline: none;
     }
 
-    .input-group input:focus {
-      border-color: #0066ff;
-    }
+    .input-group input:focus { border-color: #0052ff; }
 
     .submit-btn {
       width: 100%;
-      background: linear-gradient(135deg, #0066ff, #00d4ff);
+      background: #0052ff;
       border: none;
       border-radius: 14px;
       padding: 16px;
@@ -247,24 +396,14 @@
     .cancel-btn {
       width: 100%;
       background: transparent;
-      border: 1px solid #2a2a4e;
+      border: 1px solid #ffffff15;
       border-radius: 14px;
       padding: 14px;
-      color: #888;
+      color: #666;
       font-size: 14px;
       cursor: pointer;
       margin-top: 8px;
     }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #00000080;
-      z-index: 99;
-    }
-
-    .overlay.active { display: block; }
 
     .toast {
       display: none;
@@ -272,22 +411,50 @@
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      background: #00d4ff;
-      color: #000;
+      background: #0052ff;
+      color: #fff;
       padding: 12px 24px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 700;
       z-index: 200;
+      white-space: nowrap;
     }
-
     .toast.active { display: block; }
+
+    .disconnect-btn {
+      font-size: 11px;
+      color: #ff4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
 
     .built-tag {
       text-align: center;
-      padding: 10px;
+      padding: 20px;
       font-size: 11px;
       color: #333;
+    }
+
+    .network-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 20px 16px;
+    }
+
+    .network-dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+    }
+
+    .network-text {
+      font-size: 12px;
+      color: #666;
     }
   </style>
 </head>
@@ -295,71 +462,244 @@
 
 <div class="header">
   <div class="logo">Reach</div>
-  <div class="badge">Arc Network</div>
-</div>
-
-<div class="hero">
-  <h1>Your <span>Dollar Wallet</span><br>Built for Nigeria</h1>
-  <p>Send, save and receive USDC instantly</p>
-</div>
-
-<div class="balance-card">
-  <div class="balance-label">Total Balance</div>
-  <div class="balance-amount">$20.00</div>
-  <div class="balance-sub">USDC on Arc Network</div>
-  <div class="wallet-address" id="walletAddr">Connect your wallet to begin</div>
-</div>
-
-<div class="actions">
-  <div class="action-btn" onclick="openModal('send')">
-    <div class="action-icon">↗️</div>
-    <div class="action-label">Send</div>
-    <div class="action-sub">Transfer USDC</div>
-  </div>
-  <div class="action-btn" onclick="openModal('receive')">
-    <div class="action-icon">↙️</div>
-    <div class="action-label">Receive</div>
-    <div class="action-sub">Get paid in USDC</div>
-  </div>
-  <div class="action-btn" onclick="openModal('save')">
-    <div class="action-icon">🏦</div>
-    <div class="action-label">Save</div>
-    <div class="action-sub">Dollar savings</div>
-  </div>
-  <div class="action-btn" onclick="openModal('pay')">
-    <div class="action-icon">⚡</div>
-    <div class="action-label">Pay</div>
-    <div class="action-sub">Pay with USDC</div>
+  <div class="base-badge">
+    <div class="base-dot"></div>
+    Base Network
   </div>
 </div>
 
-<div class="section-title">💰 Savings</div>
-<div class="savings-card">
-  <div class="savings-info">
-    <h3>Dollar Vault</h3>
-    <p>Earning yield in USDC</p>
+<!-- Connect Screen -->
+<div class="connect-screen" id="connectScreen">
+  <h1>Your <span>Dollar Wallet</span> on Base</h1>
+  <p>Send, save and receive USDC on Base.<br>Built for Nigeria and the world 🌍</p>
+
+  <div class="feature-list">
+    <div class="feature-item">
+      <span class="feature-icon">🔵</span>
+      <span>Built on Base — Coinbase's blockchain</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">💸</span>
+      <span>Send & receive USDC instantly</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🪪</span>
+      <span>Claim your onchain Basename identity</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">💰</span>
+      <span>Save dollars, beat naira inflation</span>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🌍</span>
+      <span>Send to anyone, anywhere globally</span>
+    </div>
   </div>
-  <div class="savings-amount">
-    <div class="amount">$0.00</div>
-    <div class="growth">+ Start saving</div>
-  </div>
+
+  <button class="connect-btn" onclick="connectWallet()">
+    🔵 Connect Coinbase Wallet
+  </button>
+  <button class="connect-btn secondary" onclick="connectMetaMask()">
+    🦊 Connect MetaMask
+  </button>
 </div>
 
-<div class="built-tag">Built in Nigeria 🇳🇬 · Powered by Circle USDC</div>
+<!-- Main App Screen -->
+<div class="app-screen" id="appScreen">
 
-<!-- Send Modal -->
+  <div class="network-row">
+    <div class="network-dot"></div>
+    <div class="network-text">Connected to Base · USDC</div>
+    <button class="disconnect-btn" onclick="disconnect()">Disconnect</button>
+  </div>
+
+  <div class="balance-card">
+    <div class="balance-network">Base Network · USDC Balance</div>
+    <div class="balance-amount" id="balanceAmount">$0.00</div>
+    <div class="balance-usdc" id="balanceUsdc">0.00 USDC</div>
+    <div class="identity-row">
+      <div class="identity-avatar" id="avatarInitial">?</div>
+      <div>
+        <div class="identity-name" id="identityName">Loading...</div>
+        <div style="font-size:11px;opacity:0.5" id="identityAddr">-</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <div class="action-btn" onclick="openModal('send')">
+      <div class="action-icon">↗️</div>
+      <div class="action-label">Send</div>
+    </div>
+    <div class="action-btn" onclick="openModal('receive')">
+      <div class="action-icon">↙️</div>
+      <div class="action-label">Receive</div>
+    </div>
+    <div class="action-btn" onclick="openModal('save')">
+      <div class="action-icon">🏦</div>
+      <div class="action-label">Save</div>
+    </div>
+    <div class="action-btn" onclick="openModal('pay')">
+      <div class="action-icon">⚡</div>
+      <div class="action-label">Pay</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🪪 Onchain Identity</div>
+    </div>
+    <div class="identity-card">
+      <div style="font-size:13px;color:#888;margin-bottom:8px">
+        Claim your Basename — your onchain name on Base
+      </div>
+      <div style="font-size:13px;color:#fff;font-weight:600" id="basenameDisplay">
+        No Basename claimed yet
+      </div>
+      <div class="basename-input-row">
+        <input class="basename-input" id="basenameInput" placeholder="yourname.base.eth">
+        <button class="claim-btn" onclick="claimBasename()">Claim</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">💰 Dollar Savings</div>
+      <div class="section-link">View all</div>
+    </div>
+    <div class="savings-card">
+      <div class="savings-left">
+        <h3>Dollar Vault</h3>
+        <p>Save in USDC on Base</p>
+      </div>
+      <div class="savings-right">
+        <div class="amount" id="savingsAmount">$0.00</div>
+        <div class="apy">Tap to start saving</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="built-tag">Built in Nigeria 🇳🇬 · Reach on Base · Powered by USDC</div>
+</div>
+
+<!-- Modal -->
 <div class="overlay" id="overlay" onclick="closeModal()"></div>
-
 <div class="modal" id="modal">
-  <h2 id="modalTitle">Send USDC</h2>
+  <div class="modal-handle"></div>
+  <h2 id="modalTitle"></h2>
   <div id="modalContent"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  const wallet = "0x2276e9f2Ab9024664D2577cB586ea338Fecc9159";
-  document.getElementById('walletAddr').textContent = wallet.slice(0,6) + '...' + wallet.slice(-4);
+  let userAddress = null;
+  let provider = null;
+  let signer = null;
+
+  const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+  const USDC_ABI = [
+    "function balanceOf(address) view returns (uint256)",
+    "function transfer(address, uint256) returns (bool)",
+    "function decimals() view returns (uint8)"
+  ];
+
+  async function connectWallet() {
+    if (typeof window.ethereum !== 'undefined') {
+      await connectMetaMask();
+    } else {
+      showToast('Install Coinbase Wallet or MetaMask first!');
+      setTimeout(() => {
+        window.open('https://www.coinbase.com/wallet', '_blank');
+      }, 1500);
+    }
+  }
+
+  async function connectMetaMask() {
+    try {
+      if (typeof window.ethereum === 'undefined') {
+        showToast('Please install MetaMask or Coinbase Wallet!');
+        return;
+      }
+
+      provider = new ethers.BrowserProvider(window.ethereum);
+      const accounts = await provider.send("eth_requestAccounts", []);
+      signer = await provider.getSigner();
+      userAddress = accounts[0];
+
+      // Switch to Base network
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x2105' }],
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x2105',
+              chainName: 'Base',
+              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://mainnet.base.org'],
+              blockExplorerUrls: ['https://basescan.org'],
+            }],
+          });
+        }
+      }
+
+      await loadUserData();
+      showApp();
+      showToast('Wallet connected to Base!');
+
+    } catch (e) {
+      showToast('Connection failed: ' + e.message.slice(0, 40));
+    }
+  }
+
+  async function loadUserData() {
+    const short = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
+    document.getElementById('identityAddr').textContent = short;
+    document.getElementById('avatarInitial').textContent = userAddress.slice(2,4).toUpperCase();
+    document.getElementById('identityName').textContent = short;
+
+    try {
+      const contract = new ethers.Contract(USDC_BASE, USDC_ABI, provider);
+      const balance = await contract.balanceOf(userAddress);
+      const formatted = (Number(balance) / 1e6).toFixed(2);
+      document.getElementById('balanceAmount').textContent = '$' + formatted;
+      document.getElementById('balanceUsdc').textContent = formatted + ' USDC';
+    } catch(e) {
+      document.getElementById('balanceAmount').textContent = '$0.00';
+    }
+  }
+
+  function showApp() {
+    document.getElementById('connectScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'block';
+  }
+
+  function disconnect() {
+    userAddress = null;
+    provider = null;
+    signer = null;
+    document.getElementById('connectScreen').style.display = 'block';
+    document.getElementById('appScreen').style.display = 'none';
+    showToast('Disconnected');
+  }
+
+  function claimBasename() {
+    const name = document.getElementById('basenameInput').value;
+    if (!name) { showToast('Enter a basename first!'); return; }
+    const full = name.includes('.base.eth') ? name : name + '.base.eth';
+    document.getElementById('basenameDisplay').textContent = '🪪 ' + full;
+    document.getElementById('identityName').textContent = full;
+    document.getElementById('avatarInitial').textContent = name.slice(0,2).toUpperCase();
+    showToast('Basename set: ' + full);
+    window.open('https://www.base.org/names', '_blank');
+    closeModal();
+  }
 
   function openModal(type) {
     const modal = document.getElementById('modal');
@@ -371,22 +711,22 @@
       title.textContent = '↗️ Send USDC';
       content.innerHTML = `
         <div class="input-group">
-          <label>Recipient Address</label>
-          <input type="text" placeholder="0x..." id="sendAddr">
+          <label>Recipient Address or Basename</label>
+          <input type="text" placeholder="0x... or name.base.eth" id="sendAddr">
         </div>
         <div class="input-group">
           <label>Amount (USDC)</label>
           <input type="number" placeholder="0.00" id="sendAmt">
         </div>
-        <button class="submit-btn" onclick="showToast('Transaction submitted!')">Send USDC</button>
+        <button class="submit-btn" onclick="sendUSDC()">Send USDC on Base</button>
         <button class="cancel-btn" onclick="closeModal()">Cancel</button>
       `;
     } else if (type === 'receive') {
       title.textContent = '↙️ Receive USDC';
       content.innerHTML = `
         <div class="input-group">
-          <label>Your Reach Address</label>
-          <input type="text" value="${wallet}" readonly>
+          <label>Your Reach Address on Base</label>
+          <input type="text" value="${userAddress || ''}" readonly id="receiveAddr">
         </div>
         <button class="submit-btn" onclick="copyAddress()">Copy Address</button>
         <button class="cancel-btn" onclick="closeModal()">Close</button>
@@ -396,23 +736,30 @@
       content.innerHTML = `
         <div class="input-group">
           <label>Amount to Save (USDC)</label>
-          <input type="number" placeholder="0.00">
+          <input type="number" placeholder="0.00" id="saveAmt">
         </div>
-        <button class="submit-btn" onclick="showToast('Saved to Dollar Vault!')">Save Now</button>
+        <div style="font-size:12px;color:#666;margin-bottom:16px">
+          Your USDC stays on Base. Beat naira inflation by saving in dollars.
+        </div>
+        <button class="submit-btn" onclick="saveUSDC()">Save to Dollar Vault</button>
         <button class="cancel-btn" onclick="closeModal()">Cancel</button>
       `;
     } else if (type === 'pay') {
       title.textContent = '⚡ Pay with USDC';
       content.innerHTML = `
         <div class="input-group">
-          <label>Pay To</label>
-          <input type="text" placeholder="Address or username">
+          <label>Pay To (Address or Basename)</label>
+          <input type="text" placeholder="0x... or name.base.eth" id="payAddr">
         </div>
         <div class="input-group">
           <label>Amount (USDC)</label>
-          <input type="number" placeholder="0.00">
+          <input type="number" placeholder="0.00" id="payAmt">
         </div>
-        <button class="submit-btn" onclick="showToast('Payment sent!')">Pay Now</button>
+        <div class="input-group">
+          <label>Note (optional)</label>
+          <input type="text" placeholder="For what?" id="payNote">
+        </div>
+        <button class="submit-btn" onclick="payUSDC()">Pay Now</button>
         <button class="cancel-btn" onclick="closeModal()">Cancel</button>
       `;
     }
@@ -421,15 +768,59 @@
     overlay.classList.add('active');
   }
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('active');
-    document.getElementById('overlay').classList.remove('active');
+  async function sendUSDC() {
+    const addr = document.getElementById('sendAddr').value;
+    const amt = document.getElementById('sendAmt').value;
+    if (!addr || !amt) { showToast('Fill in all fields!'); return; }
+    try {
+      const contract = new ethers.Contract(USDC_BASE, USDC_ABI, signer);
+      const amount = ethers.parseUnits(amt, 6);
+      showToast('Sending USDC...');
+      const tx = await contract.transfer(addr, amount);
+      await tx.wait();
+      showToast('USDC sent on Base!');
+      closeModal();
+      await loadUserData();
+    } catch(e) {
+      showToast('Failed: ' + e.message.slice(0, 50));
+    }
+  }
+
+  async function saveUSDC() {
+    const amt = document.getElementById('saveAmt').value;
+    if (!amt) { showToast('Enter an amount!'); return; }
+    document.getElementById('savingsAmount').textContent = '$' + parseFloat(amt).toFixed(2);
+    showToast('Saved $' + amt + ' to Dollar Vault!');
+    closeModal();
+  }
+
+  async function payUSDC() {
+    const addr = document.getElementById('payAddr').value;
+    const amt = document.getElementById('payAmt').value;
+    if (!addr || !amt) { showToast('Fill in all fields!'); return; }
+    try {
+      const contract = new ethers.Contract(USDC_BASE, USDC_ABI, signer);
+      const amount = ethers.parseUnits(amt, 6);
+      showToast('Processing payment...');
+      const tx = await contract.transfer(addr, amount);
+      await tx.wait();
+      showToast('Payment sent on Base!');
+      closeModal();
+      await loadUserData();
+    } catch(e) {
+      showToast('Failed: ' + e.message.slice(0, 50));
+    }
   }
 
   function copyAddress() {
-    navigator.clipboard.writeText(wallet);
+    navigator.clipboard.writeText(userAddress);
     showToast('Address copied!');
     closeModal();
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
   }
 
   function showToast(msg) {
@@ -437,7 +828,6 @@
     toast.textContent = msg;
     toast.classList.add('active');
     setTimeout(() => toast.classList.remove('active'), 3000);
-    closeModal();
   }
 </script>
 </body>
