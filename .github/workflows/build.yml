@@ -21,40 +21,40 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Clear Gradle Cache
+        run: |
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/wrapper
 
       - name: Install dependencies
         run: npm install
 
       - name: Install Capacitor
         run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install -g @capacitor/cli
+          npm install @capacitor/core @capacitor/android
 
-      - name: Create Capacitor config
-        run: |
-          cat > capacitor.config.json << 'CAPEOF'
-          {
-            "appId": "com.reach.app",
-            "appName": "Reach",
-            "webDir": "public",
-            "server": {
-              "androidScheme": "https"
-            }
-          }
-          CAPEOF
+      - name: Init Capacitor
+        run: npx cap init Reach com.reach.app --web-dir public
+
+      - name: Add Android Platform
+        run: npx cap add android
+
+      - name: Sync
+        run: npx cap sync android
 
       - name: Build APK
         run: |
-          npx cap add android
-          npx cap sync android
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug \
+            --no-daemon \
+            --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx2g"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Reach-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
+          retention-days: 7
