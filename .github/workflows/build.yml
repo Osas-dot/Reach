@@ -13,24 +13,18 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Clear Gradle Cache
-        run: rm -rf ~/.gradle/caches
+          node-version: 18
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Install Capacitor
         run: |
-          npm install -g @capacitor/cli
-          npm install @capacitor/core@latest @capacitor/android@latest
+          npm install
+          npm install @capacitor/core@5.7.0 @capacitor/android@5.7.0 @capacitor/cli@5.7.0
 
       - name: Init Capacitor
         run: npx cap init Reach com.reach.app --web-dir public
