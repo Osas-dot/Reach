@@ -5,7 +5,27 @@
 
 <meta name="base:app_id" content="69e8ff0756caa7489826f525" />  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reach - USDC Wallet</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js">async function connectCoinbase(){if(window.ethereum&&window.ethereum.isCoinbaseWallet){await connectWallet();}else{showToast("Opening Coinbase Wallet...");window.open("https://go.cb-w.com","_blank");}}async function connectMetaMask(){if(window.ethereum&&window.ethereum.isMetaMask){await connectWallet();}else{showToast("Install MetaMask!");window.open("https://metamask.io","_blank");}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js">async function connectCoinbase(){if(window.ethereum&&window.ethereum.isCoinbaseWallet){await connectWallet();}else{showToast("Opening Coinbase Wallet...");window.open("https://go.cb-w.com","_blank");}}async function connectMetaMask(){if(window.ethereum&&window.ethereum.isMetaMask){await connectWallet();}else{showToast("Install MetaMask!");window.open("https://metamask.io","_blank");}}async function connectCoinbase() {
+  if (window.ethereum && window.ethereum.isCoinbaseWallet) {
+    await connectWallet();
+  } else {
+    showToast('Opening Coinbase Wallet...');
+    window.open('https://go.cb-w.com/dapp?cb_url=' +
+    encodeURIComponent(window.location.href), '_blank');
+  }
+}
+
+async function connectMetaMask() {
+  if (window.ethereum && window.ethereum.isMetaMask) {
+    await connectWallet();
+  } else {
+    showToast('Install MetaMask first!');
+    window.open('https://metamask.io', '_blank');
+  }
+}
+
+<!-- This is just a comment, addresses are shown in app -->
+</script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #060610; color: #fff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
@@ -854,24 +874,5 @@
   }
 async function connectCoinbase(){if(window.ethereum&&window.ethereum.isCoinbaseWallet){await connectWallet();}else{showToast("Opening Coinbase Wallet...");window.open("https://go.cb-w.com","_blank");}}async function connectMetaMask(){if(window.ethereum&&window.ethereum.isMetaMask){await connectWallet();}else{showToast("Install MetaMask!");window.open("https://metamask.io","_blank");}}</script>
 </body>
+
 </html>
-async function connectCoinbase() {
-  if (window.ethereum && window.ethereum.isCoinbaseWallet) {
-    await connectWallet();
-  } else {
-    showToast('Opening Coinbase Wallet...');
-    window.open('https://go.cb-w.com/dapp?cb_url=' +
-    encodeURIComponent(window.location.href), '_blank');
-  }
-}
-
-async function connectMetaMask() {
-  if (window.ethereum && window.ethereum.isMetaMask) {
-    await connectWallet();
-  } else {
-    showToast('Install MetaMask first!');
-    window.open('https://metamask.io', '_blank');
-  }
-}
-
-<!-- This is just a comment, addresses are shown in app -->
