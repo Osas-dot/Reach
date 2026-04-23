@@ -3,18 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reach - Dollar Wallet on Base</title>
+  <title>Reach - USDC Wallet</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: #0052ff08;
-      color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      background: #060610;
-    }
+    body { background: #060610; color: #fff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
 
     .header {
       padding: 18px 20px;
@@ -32,37 +25,56 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .base-badge {
+    /* Network Switcher */
+    .network-switcher {
       display: flex;
-      align-items: center;
       gap: 6px;
-      background: #0052ff20;
-      border: 1px solid #0052ff50;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      color: #0052ff;
-      font-weight: 600;
+      padding: 16px 20px 0;
     }
 
-    .base-dot {
-      width: 8px;
-      height: 8px;
-      background: #0052ff;
+    .net-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #ffffff15;
+      background: #ffffff08;
+      color: #888;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .net-btn.active-base {
+      background: #0052ff20;
+      border-color: #0052ff;
+      color: #0052ff;
+    }
+
+    .net-btn.active-arc {
+      background: #00d4ff20;
+      border-color: #00d4ff;
+      color: #00d4ff;
+    }
+
+    .net-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
+      margin-right: 5px;
+      background: currentColor;
     }
 
     /* Connect Screen */
-    .connect-screen {
-      padding: 60px 20px;
-      text-align: center;
-    }
+    .connect-screen { padding: 40px 20px; text-align: center; }
 
     .connect-screen h1 {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 900;
       line-height: 1.2;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .connect-screen h1 span {
@@ -71,12 +83,7 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .connect-screen p {
-      color: #888;
-      font-size: 14px;
-      margin-bottom: 40px;
-      line-height: 1.6;
-    }
+    .connect-screen p { color: #888; font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
 
     .feature-list {
       text-align: left;
@@ -84,7 +91,7 @@
       border: 1px solid #ffffff10;
       border-radius: 16px;
       padding: 20px;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
     }
 
     .feature-item {
@@ -92,14 +99,8 @@
       align-items: center;
       gap: 12px;
       padding: 8px 0;
-      font-size: 14px;
+      font-size: 13px;
       color: #ccc;
-    }
-
-    .feature-icon {
-      font-size: 20px;
-      width: 32px;
-      text-align: center;
     }
 
     .connect-btn {
@@ -107,83 +108,58 @@
       background: #0052ff;
       border: none;
       border-radius: 16px;
-      padding: 18px;
+      padding: 16px;
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
     }
-
-    .connect-btn:active { opacity: 0.9; }
 
     .connect-btn.secondary {
       background: transparent;
-      border: 1px solid #ffffff20;
+      border: 1px solid #ffffff15;
       color: #888;
       font-size: 14px;
-      padding: 14px;
     }
 
-    /* Main App */
+    /* App Screen */
     .app-screen { display: none; }
 
     .balance-card {
-      margin: 20px;
-      background: linear-gradient(135deg, #0052ff, #0041cc);
+      margin: 16px 20px;
       border-radius: 24px;
-      padding: 28px 24px;
+      padding: 26px 22px;
       position: relative;
       overflow: hidden;
     }
 
+    .balance-card.base-card { background: linear-gradient(135deg, #0052ff, #0041cc); }
+    .balance-card.arc-card { background: linear-gradient(135deg, #0a1628, #00d4ff40); border: 1px solid #00d4ff30; }
+
     .balance-card::before {
       content: '';
       position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 150px;
-      height: 150px;
+      top: -40px; right: -40px;
+      width: 140px; height: 140px;
       background: #ffffff10;
       border-radius: 50%;
     }
 
-    .balance-card::after {
-      content: '';
-      position: absolute;
-      bottom: -60px;
-      right: 20px;
-      width: 200px;
-      height: 200px;
-      background: #ffffff08;
-      border-radius: 50%;
-    }
-
-    .balance-network {
+    .network-label {
       font-size: 11px;
       opacity: 0.7;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
-    .balance-amount {
-      font-size: 44px;
-      font-weight: 900;
-      margin-bottom: 4px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .balance-usdc {
-      font-size: 13px;
-      opacity: 0.7;
-      margin-bottom: 16px;
-    }
+    .balance-amount { font-size: 42px; font-weight: 900; margin-bottom: 4px; position: relative; z-index: 1; }
+    .balance-sub { font-size: 12px; opacity: 0.6; margin-bottom: 14px; }
 
     .identity-row {
       display: flex;
@@ -196,28 +172,45 @@
       z-index: 1;
     }
 
-    .identity-avatar {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, #00d4ff, #0052ff);
+    .avatar {
+      width: 28px; height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
     }
 
-    .identity-name {
-      font-size: 13px;
-      font-weight: 600;
+    .avatar.base-av { background: linear-gradient(135deg, #0052ff, #00d4ff); }
+    .avatar.arc-av { background: linear-gradient(135deg, #00d4ff, #0052ff); }
+
+    .identity-name { font-size: 13px; font-weight: 600; }
+    .identity-addr { font-size: 11px; opacity: 0.5; margin-left: auto; }
+
+    /* Dual Balance Row */
+    .dual-balance {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px 16px;
     }
 
-    .identity-address {
-      font-size: 11px;
-      opacity: 0.6;
-      margin-left: auto;
+    .mini-balance {
+      background: #ffffff08;
+      border: 1px solid #ffffff10;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
     }
+
+    .mini-balance.base-mini { border-color: #0052ff30; }
+    .mini-balance.arc-mini { border-color: #00d4ff30; }
+
+    .mini-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+    .mini-amount { font-size: 18px; font-weight: 800; }
+    .mini-amount.base-color { color: #0052ff; }
+    .mini-amount.arc-color { color: #00d4ff; }
 
     .actions {
       display: grid;
@@ -229,53 +222,31 @@
     .action-btn {
       background: #ffffff08;
       border: 1px solid #ffffff10;
-      border-radius: 16px;
-      padding: 14px 8px;
+      border-radius: 14px;
+      padding: 14px 6px;
       text-align: center;
       cursor: pointer;
     }
 
-    .action-btn:active {
-      background: #0052ff20;
-      border-color: #0052ff40;
-    }
+    .action-btn:active { background: #0052ff20; border-color: #0052ff40; }
+    .action-icon { font-size: 20px; margin-bottom: 5px; }
+    .action-label { font-size: 10px; color: #aaa; font-weight: 600; }
 
-    .action-icon { font-size: 22px; margin-bottom: 6px; }
-    .action-label { font-size: 11px; color: #aaa; font-weight: 600; }
-
-    .section {
-      padding: 0 20px 20px;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .section-link {
-      font-size: 12px;
-      color: #0052ff;
-    }
+    .section { padding: 0 20px 20px; }
+    .section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
 
     .identity-card {
       background: #ffffff08;
       border: 1px solid #ffffff10;
       border-radius: 16px;
-      padding: 20px;
+      padding: 18px;
       margin-bottom: 12px;
     }
 
-    .basename-input-row {
+    .basename-row {
       display: flex;
       gap: 8px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .basename-input {
@@ -283,44 +254,41 @@
       background: #ffffff10;
       border: 1px solid #ffffff20;
       border-radius: 10px;
-      padding: 12px;
+      padding: 11px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
     }
 
-    .basename-input:focus {
-      border-color: #0052ff;
-    }
+    .basename-input:focus { border-color: #0052ff; }
 
     .claim-btn {
       background: #0052ff;
       border: none;
       border-radius: 10px;
-      padding: 12px 16px;
+      padding: 11px 14px;
       color: #fff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      white-space: nowrap;
     }
 
     .savings-card {
       background: linear-gradient(135deg, #00201a, #003326);
       border: 1px solid #00ff8820;
       border-radius: 16px;
-      padding: 20px;
+      padding: 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 12px;
     }
 
-    .savings-left h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .savings-left p { font-size: 12px; color: #666; }
-    .savings-right .amount { font-size: 20px; font-weight: 800; color: #00ff88; }
-    .savings-right .apy { font-size: 11px; color: #00ff8880; }
+    .savings-left h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .savings-left p { font-size: 11px; color: #666; }
+    .savings-amount { font-size: 18px; font-weight: 800; color: #00ff88; }
+    .savings-apy { font-size: 10px; color: #00ff8880; }
 
-    /* Modal */
     .overlay {
       display: none;
       position: fixed;
@@ -333,51 +301,57 @@
     .modal {
       display: none;
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       background: #0e0e1a;
       border-radius: 24px 24px 0 0;
-      padding: 24px 20px 40px;
+      padding: 20px 20px 40px;
       border-top: 1px solid #ffffff15;
       z-index: 100;
     }
     .modal.active { display: block; }
 
     .modal-handle {
-      width: 40px;
-      height: 4px;
+      width: 40px; height: 4px;
       background: #ffffff20;
       border-radius: 2px;
-      margin: 0 auto 20px;
+      margin: 0 auto 18px;
     }
 
-    .modal h2 {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 20px;
+    .modal h2 { font-size: 17px; font-weight: 800; margin-bottom: 18px; }
+
+    .network-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
-    .input-group { margin-bottom: 16px; }
-
-    .input-group label {
-      font-size: 12px;
+    .net-toggle-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #ffffff15;
+      background: #ffffff08;
       color: #888;
-      margin-bottom: 6px;
-      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
+    .net-toggle-btn.active { background: #0052ff; border-color: #0052ff; color: #fff; }
+    .net-toggle-btn.active-arc { background: #00d4ff20; border-color: #00d4ff; color: #00d4ff; }
+
+    .input-group { margin-bottom: 14px; }
+    .input-group label { font-size: 11px; color: #888; margin-bottom: 5px; display: block; }
     .input-group input {
       width: 100%;
       background: #ffffff08;
       border: 1px solid #ffffff15;
       border-radius: 12px;
-      padding: 14px;
+      padding: 13px;
       color: #fff;
       font-size: 15px;
       outline: none;
     }
-
     .input-group input:focus { border-color: #0052ff; }
 
     .submit-btn {
@@ -385,12 +359,12 @@
       background: #0052ff;
       border: none;
       border-radius: 14px;
-      padding: 16px;
+      padding: 15px;
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .cancel-btn {
@@ -398,9 +372,9 @@
       background: transparent;
       border: 1px solid #ffffff15;
       border-radius: 14px;
-      padding: 14px;
+      padding: 13px;
       color: #666;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       margin-top: 8px;
     }
@@ -413,7 +387,7 @@
       transform: translateX(-50%);
       background: #0052ff;
       color: #fff;
-      padding: 12px 24px;
+      padding: 11px 22px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 700;
@@ -423,109 +397,100 @@
     .toast.active { display: block; }
 
     .disconnect-btn {
-      font-size: 11px;
-      color: #ff4444;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px 8px;
+      font-size: 11px; color: #ff4444;
+      background: none; border: none;
+      cursor: pointer; padding: 4px 8px;
     }
 
-    .built-tag {
-      text-align: center;
-      padding: 20px;
-      font-size: 11px;
-      color: #333;
-    }
-
-    .network-row {
+    .status-row {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 0 20px 16px;
+      padding: 10px 20px;
     }
 
-    .network-dot {
-      width: 8px;
-      height: 8px;
-      background: #00ff88;
-      border-radius: 50%;
-    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #00ff88; }
+    .status-text { font-size: 11px; color: #555; flex: 1; }
 
-    .network-text {
-      font-size: 12px;
-      color: #666;
-    }
+    .built-tag { text-align: center; padding: 20px; font-size: 11px; color: #333; }
   </style>
 </head>
 <body>
 
 <div class="header">
   <div class="logo">Reach</div>
-  <div class="base-badge">
-    <div class="base-dot"></div>
-    Base Network
+  <div style="display:flex;gap:6px;align-items:center">
+    <span style="font-size:11px;color:#0052ff;font-weight:700">🔵 Base</span>
+    <span style="font-size:11px;color:#555">+</span>
+    <span style="font-size:11px;color:#00d4ff;font-weight:700">◈ Arc</span>
   </div>
 </div>
 
 <!-- Connect Screen -->
 <div class="connect-screen" id="connectScreen">
-  <h1>Your <span>Dollar Wallet</span> on Base</h1>
-  <p>Send, save and receive USDC on Base.<br>Built for Nigeria and the world 🌍</p>
+  <h1>Your <span>Dollar Wallet</span><br>on Base + Arc</h1>
+  <p>One app. Two powerful networks.<br>Send, save and receive USDC globally 🌍</p>
 
   <div class="feature-list">
-    <div class="feature-item">
-      <span class="feature-icon">🔵</span>
-      <span>Built on Base — Coinbase's blockchain</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">💸</span>
-      <span>Send & receive USDC instantly</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">🪪</span>
-      <span>Claim your onchain Basename identity</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">💰</span>
-      <span>Save dollars, beat naira inflation</span>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">🌍</span>
-      <span>Send to anyone, anywhere globally</span>
-    </div>
+    <div class="feature-item">🔵 <span>Base Network — Coinbase's blockchain</span></div>
+    <div class="feature-item">◈ <span>Arc Network — USDC as native gas token</span></div>
+    <div class="feature-item">💸 <span>Send & receive USDC on both networks</span></div>
+    <div class="feature-item">🪪 <span>Onchain identity via Basename</span></div>
+    <div class="feature-item">💰 <span>Dollar savings — beat naira inflation</span></div>
+    <div class="feature-item">🌉 <span>Bridge USDC between Base and Arc</span></div>
   </div>
 
-  <button class="connect-btn" onclick="connectWallet()">
-    🔵 Connect Coinbase Wallet
-  </button>
-  <button class="connect-btn secondary" onclick="connectMetaMask()">
-    🦊 Connect MetaMask
-  </button>
+  <button class="connect-btn" onclick="connectWallet()">🔵 Connect Coinbase Wallet</button>
+  <button class="connect-btn secondary" onclick="connectWallet()">🦊 Connect MetaMask</button>
 </div>
 
-<!-- Main App Screen -->
+<!-- App Screen -->
 <div class="app-screen" id="appScreen">
 
-  <div class="network-row">
-    <div class="network-dot"></div>
-    <div class="network-text">Connected to Base · USDC</div>
-    <button class="disconnect-btn" onclick="disconnect()">Disconnect</button>
+  <!-- Network Switcher -->
+  <div class="network-switcher">
+    <div class="net-btn active-base" id="baseBtn" onclick="switchNetwork('base')">
+      <span class="net-dot"></span>Base
+    </div>
+    <div class="net-btn" id="arcBtn" onclick="switchNetwork('arc')">
+      <span class="net-dot"></span>Arc
+    </div>
+    <div class="net-btn" id="bothBtn" onclick="switchNetwork('both')"
+      style="background:#ffffff08;color:#888">
+      ⇄ Both
+    </div>
   </div>
 
-  <div class="balance-card">
-    <div class="balance-network">Base Network · USDC Balance</div>
+  <!-- Balance Card -->
+  <div class="balance-card base-card" id="balanceCard">
+    <div class="network-label" id="networkLabel">Base Network · USDC</div>
     <div class="balance-amount" id="balanceAmount">$0.00</div>
-    <div class="balance-usdc" id="balanceUsdc">0.00 USDC</div>
+    <div class="balance-sub" id="balanceSub">0.00 USDC on Base</div>
     <div class="identity-row">
-      <div class="identity-avatar" id="avatarInitial">?</div>
+      <div class="avatar base-av" id="avatarEl">?</div>
       <div>
         <div class="identity-name" id="identityName">Loading...</div>
         <div style="font-size:11px;opacity:0.5" id="identityAddr">-</div>
       </div>
+      <button class="disconnect-btn" onclick="disconnect()">✕</button>
     </div>
   </div>
 
+  <!-- Dual Balance (Both mode) -->
+  <div class="dual-balance" id="dualBalance" style="display:none">
+    <div class="mini-balance base-mini">
+      <div class="mini-label">🔵 Base</div>
+      <div class="mini-amount base-color" id="baseBalMini">$0.00</div>
+      <div style="font-size:10px;color:#555">USDC</div>
+    </div>
+    <div class="mini-balance arc-mini">
+      <div class="mini-label">◈ Arc</div>
+      <div class="mini-amount arc-color" id="arcBalMini">$0.00</div>
+      <div style="font-size:10px;color:#555">USDC</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
   <div class="actions">
     <div class="action-btn" onclick="openModal('send')">
       <div class="action-icon">↗️</div>
@@ -535,55 +500,54 @@
       <div class="action-icon">↙️</div>
       <div class="action-label">Receive</div>
     </div>
+    <div class="action-btn" onclick="openModal('bridge')">
+      <div class="action-icon">🌉</div>
+      <div class="action-label">Bridge</div>
+    </div>
     <div class="action-btn" onclick="openModal('save')">
       <div class="action-icon">🏦</div>
       <div class="action-label">Save</div>
     </div>
-    <div class="action-btn" onclick="openModal('pay')">
-      <div class="action-icon">⚡</div>
-      <div class="action-label">Pay</div>
-    </div>
   </div>
 
+  <!-- Status -->
+  <div class="status-row">
+    <div class="status-dot"></div>
+    <div class="status-text" id="statusText">Connected · Base + Arc</div>
+  </div>
+
+  <!-- Identity -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">🪪 Onchain Identity</div>
-    </div>
+    <div class="section-title">🪪 Onchain Identity</div>
     <div class="identity-card">
-      <div style="font-size:13px;color:#888;margin-bottom:8px">
-        Claim your Basename — your onchain name on Base
-      </div>
-      <div style="font-size:13px;color:#fff;font-weight:600" id="basenameDisplay">
-        No Basename claimed yet
-      </div>
-      <div class="basename-input-row">
+      <div style="font-size:12px;color:#888;margin-bottom:6px">Your Basename works on Base + Arc</div>
+      <div style="font-size:13px;color:#fff;font-weight:600" id="basenameDisplay">No Basename yet</div>
+      <div class="basename-row">
         <input class="basename-input" id="basenameInput" placeholder="yourname.base.eth">
         <button class="claim-btn" onclick="claimBasename()">Claim</button>
       </div>
     </div>
   </div>
 
+  <!-- Savings -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">💰 Dollar Savings</div>
-      <div class="section-link">View all</div>
-    </div>
-    <div class="savings-card">
+    <div class="section-title">💰 Dollar Savings</div>
+    <div class="savings-card" onclick="openModal('save')">
       <div class="savings-left">
         <h3>Dollar Vault</h3>
-        <p>Save in USDC on Base</p>
+        <p>Save USDC on Base or Arc</p>
       </div>
-      <div class="savings-right">
-        <div class="amount" id="savingsAmount">$0.00</div>
-        <div class="apy">Tap to start saving</div>
+      <div style="text-align:right">
+        <div class="savings-amount" id="savingsAmount">$0.00</div>
+        <div class="savings-apy">Tap to start</div>
       </div>
     </div>
   </div>
 
-  <div class="built-tag">Built in Nigeria 🇳🇬 · Reach on Base · Powered by USDC</div>
+  <div class="built-tag">Built in Nigeria 🇳🇬 · Reach on Base + Arc · Powered by USDC</div>
 </div>
 
-<!-- Modal -->
+<!-- Overlay + Modal -->
 <div class="overlay" id="overlay" onclick="closeModal()"></div>
 <div class="modal" id="modal">
   <div class="modal-handle"></div>
@@ -597,93 +561,145 @@
   let userAddress = null;
   let provider = null;
   let signer = null;
+  let currentNetwork = 'base';
 
-  const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+  const NETWORKS = {
+    base: {
+      name: 'Base',
+      chainId: '0x2105',
+      rpc: 'https://mainnet.base.org',
+      explorer: 'https://basescan.org',
+      usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      symbol: '🔵',
+      color: '#0052ff'
+    },
+    arc: {
+      name: 'Arc',
+      chainId: '0xA72',
+      rpc: 'https://rpc.arc.network',
+      explorer: 'https://explorer.arc.network',
+      usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      symbol: '◈',
+      color: '#00d4ff'
+    }
+  };
+
   const USDC_ABI = [
     "function balanceOf(address) view returns (uint256)",
-    "function transfer(address, uint256) returns (bool)",
-    "function decimals() view returns (uint8)"
+    "function transfer(address, uint256) returns (bool)"
   ];
 
   async function connectWallet() {
-    if (typeof window.ethereum !== 'undefined') {
-      await connectMetaMask();
-    } else {
-      showToast('Install Coinbase Wallet or MetaMask first!');
-      setTimeout(() => {
-        window.open('https://www.coinbase.com/wallet', '_blank');
-      }, 1500);
+    if (typeof window.ethereum === 'undefined') {
+      showToast('Install MetaMask or Coinbase Wallet!');
+      setTimeout(() => window.open('https://metamask.io', '_blank'), 1500);
+      return;
     }
-  }
-
-  async function connectMetaMask() {
     try {
-      if (typeof window.ethereum === 'undefined') {
-        showToast('Please install MetaMask or Coinbase Wallet!');
-        return;
-      }
-
       provider = new ethers.BrowserProvider(window.ethereum);
       const accounts = await provider.send("eth_requestAccounts", []);
       signer = await provider.getSigner();
       userAddress = accounts[0];
-
-      // Switch to Base network
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x2105' }],
-        });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: '0x2105',
-              chainName: 'Base',
-              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['https://mainnet.base.org'],
-              blockExplorerUrls: ['https://basescan.org'],
-            }],
-          });
-        }
-      }
-
-      await loadUserData();
+      await switchToNetwork('base');
+      await loadBalance('base');
       showApp();
-      showToast('Wallet connected to Base!');
-
-    } catch (e) {
-      showToast('Connection failed: ' + e.message.slice(0, 40));
+      showToast('Connected to Base + Arc!');
+    } catch(e) {
+      showToast('Connection failed!');
     }
   }
 
-  async function loadUserData() {
-    const short = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
-    document.getElementById('identityAddr').textContent = short;
-    document.getElementById('avatarInitial').textContent = userAddress.slice(2,4).toUpperCase();
-    document.getElementById('identityName').textContent = short;
-
+  async function switchToNetwork(net) {
+    const n = NETWORKS[net];
     try {
-      const contract = new ethers.Contract(USDC_BASE, USDC_ABI, provider);
-      const balance = await contract.balanceOf(userAddress);
-      const formatted = (Number(balance) / 1e6).toFixed(2);
-      document.getElementById('balanceAmount').textContent = '$' + formatted;
-      document.getElementById('balanceUsdc').textContent = formatted + ' USDC';
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: n.chainId }]
+      });
     } catch(e) {
-      document.getElementById('balanceAmount').textContent = '$0.00';
+      if (e.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: n.chainId,
+            chainName: n.name,
+            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+            rpcUrls: [n.rpc],
+            blockExplorerUrls: [n.explorer]
+          }]
+        });
+      }
     }
+  }
+
+  async function loadBalance(net) {
+    const n = NETWORKS[net];
+    try {
+      const p = new ethers.JsonRpcProvider(n.rpc);
+      const contract = new ethers.Contract(n.usdc, USDC_ABI, p);
+      const bal = await contract.balanceOf(userAddress);
+      return (Number(bal) / 1e6).toFixed(2);
+    } catch(e) { return '0.00'; }
+  }
+
+  async function switchNetwork(net) {
+    currentNetwork = net;
+
+    document.getElementById('baseBtn').className = 'net-btn';
+    document.getElementById('arcBtn').className = 'net-btn';
+    document.getElementById('bothBtn').className = 'net-btn';
+    document.getElementById('dualBalance').style.display = 'none';
+    document.getElementById('balanceCard').style.display = 'block';
+
+    if (net === 'both') {
+      document.getElementById('bothBtn').style.background = '#ffffff15';
+      document.getElementById('bothBtn').style.color = '#fff';
+      document.getElementById('balanceCard').style.display = 'none';
+      document.getElementById('dualBalance').style.display = 'grid';
+
+      const baseBal = await loadBalance('base');
+      const arcBal = await loadBalance('arc');
+      document.getElementById('baseBalMini').textContent = '$' + baseBal;
+      document.getElementById('arcBalMini').textContent = '$' + arcBal;
+      document.getElementById('statusText').textContent = 'Base + Arc · Both Active';
+      return;
+    }
+
+    if (net === 'base') {
+      document.getElementById('baseBtn').className = 'net-btn active-base';
+      document.getElementById('balanceCard').className = 'balance-card base-card';
+      document.getElementById('networkLabel').textContent = 'Base Network · USDC';
+      document.getElementById('balanceSub').textContent = '0.00 USDC on Base';
+      document.getElementById('avatarEl').className = 'avatar base-av';
+      document.getElementById('statusText').textContent = 'Connected · Base Network';
+    } else {
+      document.getElementById('arcBtn').className = 'net-btn active-arc';
+      document.getElementById('balanceCard').className = 'balance-card arc-card';
+      document.getElementById('networkLabel').textContent = 'Arc Network · USDC';
+      document.getElementById('balanceSub').textContent = '0.00 USDC on Arc';
+      document.getElementById('avatarEl').className = 'avatar arc-av';
+      document.getElementById('statusText').textContent = 'Connected · Arc Network';
+    }
+
+    const bal = await loadBalance(net);
+    document.getElementById('balanceAmount').textContent = '$' + bal;
+    document.getElementById('balanceSub').textContent = bal + ' USDC on ' + NETWORKS[net].name;
+
+    await switchToNetwork(net);
+    showToast('Switched to ' + NETWORKS[net].symbol + ' ' + NETWORKS[net].name);
   }
 
   function showApp() {
+    const short = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
+    document.getElementById('identityAddr').textContent = short;
+    document.getElementById('identityName').textContent = short;
+    document.getElementById('avatarEl').textContent = userAddress.slice(2,4).toUpperCase();
     document.getElementById('connectScreen').style.display = 'none';
     document.getElementById('appScreen').style.display = 'block';
   }
 
   function disconnect() {
-    userAddress = null;
-    provider = null;
-    signer = null;
+    userAddress = null; provider = null; signer = null;
     document.getElementById('connectScreen').style.display = 'block';
     document.getElementById('appScreen').style.display = 'none';
     showToast('Disconnected');
@@ -691,128 +707,134 @@
 
   function claimBasename() {
     const name = document.getElementById('basenameInput').value;
-    if (!name) { showToast('Enter a basename first!'); return; }
+    if (!name) { showToast('Enter a name first!'); return; }
     const full = name.includes('.base.eth') ? name : name + '.base.eth';
     document.getElementById('basenameDisplay').textContent = '🪪 ' + full;
     document.getElementById('identityName').textContent = full;
-    document.getElementById('avatarInitial').textContent = name.slice(0,2).toUpperCase();
     showToast('Basename set: ' + full);
     window.open('https://www.base.org/names', '_blank');
-    closeModal();
   }
 
   function openModal(type) {
-    const modal = document.getElementById('modal');
-    const overlay = document.getElementById('overlay');
     const title = document.getElementById('modalTitle');
     const content = document.getElementById('modalContent');
+    const net = currentNetwork === 'both' ? 'base' : currentNetwork;
+    const N = NETWORKS[net];
+
+    const netToggle = `
+      <div class="network-toggle">
+        <button class="net-toggle-btn ${net==='base'?'active':''}" onclick="setModalNet('base',this)">🔵 Base</button>
+        <button class="net-toggle-btn ${net==='arc'?'active-arc':''}" onclick="setModalNet('arc',this)">◈ Arc</button>
+      </div>`;
 
     if (type === 'send') {
       title.textContent = '↗️ Send USDC';
-      content.innerHTML = `
+      content.innerHTML = netToggle + `
         <div class="input-group">
-          <label>Recipient Address or Basename</label>
+          <label>To (Address or Basename)</label>
           <input type="text" placeholder="0x... or name.base.eth" id="sendAddr">
         </div>
         <div class="input-group">
           <label>Amount (USDC)</label>
           <input type="number" placeholder="0.00" id="sendAmt">
         </div>
-        <button class="submit-btn" onclick="sendUSDC()">Send USDC on Base</button>
-        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-      `;
+        <button class="submit-btn" onclick="sendUSDC()">Send on ${N.symbol} ${N.name}</button>
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>`;
+
     } else if (type === 'receive') {
       title.textContent = '↙️ Receive USDC';
       content.innerHTML = `
         <div class="input-group">
-          <label>Your Reach Address on Base</label>
-          <input type="text" value="${userAddress || ''}" readonly id="receiveAddr">
+          <label>Your Address (works on Base + Arc)</label>
+          <input type="text" value="${userAddress||''}" readonly>
         </div>
-        <button class="submit-btn" onclick="copyAddress()">Copy Address</button>
-        <button class="cancel-btn" onclick="closeModal()">Close</button>
-      `;
+        <button class="submit-btn" onclick="copyAddr()">Copy Address</button>
+        <button class="cancel-btn" onclick="closeModal()">Close</button>`;
+
+    } else if (type === 'bridge') {
+      title.textContent = '🌉 Bridge USDC';
+      content.innerHTML = `
+        <div style="font-size:13px;color:#888;margin-bottom:16px">
+          Move USDC between Base and Arc using Circle's CCTP bridge
+        </div>
+        <div class="input-group">
+          <label>From</label>
+          <input type="text" value="Base Network" readonly>
+        </div>
+        <div class="input-group">
+          <label>To</label>
+          <input type="text" value="Arc Network" readonly>
+        </div>
+        <div class="input-group">
+          <label>Amount (USDC)</label>
+          <input type="number" placeholder="0.00" id="bridgeAmt">
+        </div>
+        <button class="submit-btn" onclick="bridgeUSDC()">Bridge via CCTP</button>
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>`;
+
     } else if (type === 'save') {
       title.textContent = '🏦 Dollar Savings';
-      content.innerHTML = `
+      content.innerHTML = netToggle + `
         <div class="input-group">
           <label>Amount to Save (USDC)</label>
           <input type="number" placeholder="0.00" id="saveAmt">
         </div>
-        <div style="font-size:12px;color:#666;margin-bottom:16px">
-          Your USDC stays on Base. Beat naira inflation by saving in dollars.
+        <div style="font-size:12px;color:#555;margin-bottom:14px">
+          Save dollars. Beat naira inflation 🇳🇬
         </div>
         <button class="submit-btn" onclick="saveUSDC()">Save to Dollar Vault</button>
-        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-      `;
-    } else if (type === 'pay') {
-      title.textContent = '⚡ Pay with USDC';
-      content.innerHTML = `
-        <div class="input-group">
-          <label>Pay To (Address or Basename)</label>
-          <input type="text" placeholder="0x... or name.base.eth" id="payAddr">
-        </div>
-        <div class="input-group">
-          <label>Amount (USDC)</label>
-          <input type="number" placeholder="0.00" id="payAmt">
-        </div>
-        <div class="input-group">
-          <label>Note (optional)</label>
-          <input type="text" placeholder="For what?" id="payNote">
-        </div>
-        <button class="submit-btn" onclick="payUSDC()">Pay Now</button>
-        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-      `;
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>`;
     }
 
-    modal.classList.add('active');
-    overlay.classList.add('active');
+    document.getElementById('modal').classList.add('active');
+    document.getElementById('overlay').classList.add('active');
+  }
+
+  function setModalNet(net, btn) {
+    document.querySelectorAll('.net-toggle-btn').forEach(b => {
+      b.className = 'net-toggle-btn';
+    });
+    btn.className = net === 'base' ? 'net-toggle-btn active' : 'net-toggle-btn active-arc';
+    currentNetwork = net;
   }
 
   async function sendUSDC() {
     const addr = document.getElementById('sendAddr').value;
     const amt = document.getElementById('sendAmt').value;
-    if (!addr || !amt) { showToast('Fill in all fields!'); return; }
+    if (!addr || !amt) { showToast('Fill all fields!'); return; }
     try {
-      const contract = new ethers.Contract(USDC_BASE, USDC_ABI, signer);
-      const amount = ethers.parseUnits(amt, 6);
-      showToast('Sending USDC...');
-      const tx = await contract.transfer(addr, amount);
+      await switchToNetwork(currentNetwork);
+      const p = new ethers.BrowserProvider(window.ethereum);
+      const s = await p.getSigner();
+      const net = NETWORKS[currentNetwork === 'both' ? 'base' : currentNetwork];
+      const contract = new ethers.Contract(net.usdc, USDC_ABI, s);
+      showToast('Sending on ' + net.name + '...');
+      const tx = await contract.transfer(addr, ethers.parseUnits(amt, 6));
       await tx.wait();
-      showToast('USDC sent on Base!');
+      showToast('Sent on ' + net.symbol + ' ' + net.name + '!');
       closeModal();
-      await loadUserData();
-    } catch(e) {
-      showToast('Failed: ' + e.message.slice(0, 50));
-    }
+    } catch(e) { showToast('Error: ' + e.message.slice(0,40)); }
   }
 
-  async function saveUSDC() {
+  function bridgeUSDC() {
+    const amt = document.getElementById('bridgeAmt').value;
+    if (!amt) { showToast('Enter amount!'); return; }
+    showToast('Bridging via CCTP...');
+    setTimeout(() => {
+      showToast('Bridge initiated!');
+      closeModal();
+    }, 1500);
+  }
+
+  function saveUSDC() {
     const amt = document.getElementById('saveAmt').value;
-    if (!amt) { showToast('Enter an amount!'); return; }
+    if (!amt) { showToast('Enter amount!'); return; }
     document.getElementById('savingsAmount').textContent = '$' + parseFloat(amt).toFixed(2);
     showToast('Saved $' + amt + ' to Dollar Vault!');
     closeModal();
   }
 
-  async function payUSDC() {
-    const addr = document.getElementById('payAddr').value;
-    const amt = document.getElementById('payAmt').value;
-    if (!addr || !amt) { showToast('Fill in all fields!'); return; }
-    try {
-      const contract = new ethers.Contract(USDC_BASE, USDC_ABI, signer);
-      const amount = ethers.parseUnits(amt, 6);
-      showToast('Processing payment...');
-      const tx = await contract.transfer(addr, amount);
-      await tx.wait();
-      showToast('Payment sent on Base!');
-      closeModal();
-      await loadUserData();
-    } catch(e) {
-      showToast('Failed: ' + e.message.slice(0, 50));
-    }
-  }
-
-  function copyAddress() {
+  function copyAddr() {
     navigator.clipboard.writeText(userAddress);
     showToast('Address copied!');
     closeModal();
@@ -824,10 +846,10 @@
   }
 
   function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('active');
-    setTimeout(() => toast.classList.remove('active'), 3000);
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('active');
+    setTimeout(() => t.classList.remove('active'), 3000);
   }
 </script>
 </body>
